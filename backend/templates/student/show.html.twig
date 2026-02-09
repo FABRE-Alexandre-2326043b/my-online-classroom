@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4 px-4">
+    <a href="{{ path('student_dashboard') }}" class="btn btn-outline-secondary mb-3">← Retour aux cours</a>
+    
+    <h1 class="mb-3">{{ course.title }}</h1>
+    
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            {{ course.description|default('')|markdown_to_html }}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-9 col-md-8">
+            
+            {% if course.videoFilename %}
+                <div class="card mb-4">
+                    <div class="card-header">🎥 Vidéo du cours</div>
+                    <div class="card-body p-0">
+                        <video controls class="w-100" style="max-height: 500px; background:black;">
+                            <source src="{{ asset('uploads/courses/' ~ course.videoFilename) }}" type="video/mp4">
+                            Votre navigateur ne supporte pas la vidéo.
+                        </video>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if course.pdfFilename %}
+                <div class="card mb-4" style="height: 850px;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>📄 Support PDF</span>
+                        {# Lien de téléchargement de secours #}
+                        <a href="{{ asset('uploads/courses/' ~ course.pdfFilename) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            Ouvrir dans un nouvel onglet
+                        </a>
+                    </div>
+                    <div class="card-body p-0 h-100">
+                        <iframe src="{{ asset('uploads/courses/' ~ course.pdfFilename) }}" width="100%" height="100%" style="border:none;">
+                        </iframe>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-3 col-md-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">📝 Exercices</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small">Testez vos connaissances sur ce chapitre.</p>
+                    
+                    {% if course.quizzes is not empty %}
+                        <ul class="list-group list-group-flush">
+                            {% for quiz in course.quizzes %}
+                                <li class="list-group-item px-0">
+                                    <div class="fw-bold mb-1">{{ quiz.title }}</div>
+                                    <a href="{{ path('student_quiz_take', {'id': quiz.id}) }}" class="btn btn-primary btn-sm w-100">
+                                        ▶ Commencer
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-warning py-2 small">Aucun QCM disponible.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

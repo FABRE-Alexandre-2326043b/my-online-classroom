@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un nouveau cours{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">🎓 Créer un nouveau cours</h1>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        
+                        {{ form_errors(form) }}
+
+                        <div class="mb-4">
+                            {{ form_row(form.title) }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_row(form.description) }}
+                            <div class="form-text text-muted">
+                                Vous pouvez laisser la description vide et cocher la case ci-dessous pour que l'IA la génère.
+                            </div>
+                        </div>
+
+                        {# Affiche la case à cocher pour l'IA #}
+                        <div class="mb-4 p-3 bg-light rounded border">
+                            {{ form_row(form.generate_description) }}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{{ path('admin_course_index') }}" class="btn btn-outline-secondary">
+                                ← Retour à la liste
+                            </a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

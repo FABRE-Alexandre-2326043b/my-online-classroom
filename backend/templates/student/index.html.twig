@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Espace Élève{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">🎓 Mes Cours disponibles</h1>
+    
+    <div class="row">
+        {% for course in courses %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text text-muted">{{ course.description|slice(0, 100) }}...</p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <a href="{{ path('student_course_show', {'id': course.id}) }}" class="btn btn-primary w-100">
+                            ▶ Accéder au cours
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">Aucun cours n'est disponible pour le moment.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

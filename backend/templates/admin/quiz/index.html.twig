@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des QCM{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">📝 Liste des QCM par Cours</h1>
+    </div>
+
+    {% for course in courses %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">📚 {{ course.title }}</h5>
+                {% if course.pdfFilename %}
+        <button type="button" 
+                class="btn btn-sm btn-primary" 
+                data-bs-toggle="modal" 
+                data-bs-target="#generateModal{{ course.id }}">
+            🤖 Générer un QCM par IA
+        </button>
+
+        <div class="modal fade" id="generateModal{{ course.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ path('admin_quiz_generate', {'id': course.id}) }}" method="post">
+                        
+                        <div class="modal-header">
+                            <h5 class="modal-title">Générer un Quiz pour : {{ course.title }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Type de questions</label>
+                                <select name="type" class="form-select">
+                                    <option value="qcm">QCM Classique (4 choix)</option>
+                                    <option value="true_false">Vrai ou Faux</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nombre de questions</label>
+                                <input type="number" name="count" class="form-control" value="5" min="1" max="10">
+                            </div>
+                            
+                            <div class="alert alert-info small">
+                                ℹ️ L'IA va analyser le PDF pour créer les questions. Cela peut prendre quelques secondes.
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-success">🚀 Lancer la génération</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <span class="badge bg-secondary">Pas de PDF</span>
+    {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if course.quizzes is empty %}
+                    <div class="p-3 text-muted">Aucun QCM pour ce cours.</div>
+                {% else %}
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 70%;">Titre du QCM</th>
+                                <th class="text-center">Participants</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for quiz in course.quizzes %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <strong>{{ quiz.title }}</strong>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge bg-secondary">{{ quiz.quizResults|length }} élèves</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ path('admin_quiz_results', {id: quiz.id}) }}" class="btn btn-sm btn-outline-primary">
+                                            📊 Voir les notes
+                                        </a>
+                                        <a href="{{ path('admin_quiz_edit', {'id': quiz.id}) }}" class="btn btn-sm btn-warning">
+                                            ✏️ Éditer
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucun cours disponible.</div>
+    {% endfor %}
+</div>
+{% endblock %}

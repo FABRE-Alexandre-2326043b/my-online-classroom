@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Professeurs{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">👨‍🏫 L'équipe pédagogique</h1>
+
+    <div class="row">
+        {% if teachers is empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Aucun professeur n'est inscrit pour le moment.
+                </div>
+            </div>
+        {% else %}
+            {% for teacher in teachers %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            {# Avatar générique basé sur les initiales #}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
+                                {{ teacher.email|first|upper }}
+                            </div>
+                            
+                            <h5 class="card-title text-truncate" title="{{ teacher.email }}">
+                                {{ teacher.email }}
+                            </h5>
+                            
+                            <p class="card-text text-muted small">
+                                Professeur certifié
+                            </p>
+                            
+                            <a href="#" class="btn btn-outline-primary btn-sm mt-2">
+                                Voir ses cours
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

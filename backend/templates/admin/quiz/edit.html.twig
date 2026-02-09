@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le QCM{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-5 px-5">
+    <h1>✏️ Modifier le QCM : {{ quiz.title }}</h1>
+    
+    {{ form_start(form) }}
+        
+        {{ form_row(form.title) }}
+
+        <h4 class="mt-4">Questions</h4>
+        <div id="questions-wrapper" 
+             data-prototype="{{ form_widget(form.questions.vars.prototype)|e('html_attr') }}">
+           
+            {% for questionField in form.questions %}
+                <div class="card mb-4 shadow-sm question-item">
+                    <div class="card-body bg-light">
+                        <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                            <h5 class="card-title text-primary">Question n°{{ loop.index }}</h5>
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-question">🗑️ Supprimer</button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                {{ form_row(questionField.question) }}
+                            </div>
+                            
+                            <div class="col-12">
+                                {{ form_row(questionField.options) }}
+                            </div>
+
+                            <div class="col-12">
+                                {{ form_row(questionField.correct_index) }}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <button type="button" class="btn btn-success mb-4" id="add-question">
+            + Ajouter une question
+        </button>
+
+        <div>
+            {{ form_widget(form.save) }}
+            <a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary mt-3">Annuler</a>
+        </div>
+
+    {{ form_end(form) }}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const wrapper = document.getElementById('questions-wrapper');
+        const addButton = document.getElementById('add-question');
+        
+        let index = wrapper.querySelectorAll('.question-item').length;
+
+        addButton.addEventListener('click', function() {
+            let prototype = wrapper.dataset.prototype;
+            let newForm = prototype.replace(/__name__/g, index);
+            index++;
+
+            const card = document.createElement('div');
+            card.classList.add('card', 'mb-3', 'shadow-sm', 'question-item');
+            card.innerHTML = `
+                <div class="card-body bg-light">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">Nouvelle Question</h5>
+                        <button type="button" class="btn btn-danger btn-sm remove-question">🗑️ Supprimer</button>
+                    </div>
+                    <div class="row">
+                        ${newForm}
+                    </div>
+                </div>
+            `;
+            wrapper.appendChild(card);
+        });
+
+        wrapper.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('remove-question')) {
+                e.target.closest('.question-item').remove();
+            }
+        });
+    });
+</script>
+{% endblock %}

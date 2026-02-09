@@ -12,6 +12,34 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div class="container mt-3">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <a href="{{ path('app_teachers') }}"
+                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                Professeurs
+            </a>
+            <a href="{{ path('admin_quiz_index') }}"
+            class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                Quizzes
+            </a>
+            <a href="{{ path('admin_course_index') }}"
+            class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                Cours
+            </a>
+            <a href="{{ path('app_logout') }}"
+            class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+                Se déconnecter
+            </a>
+        </div>
+            {% block body %}
+            
+        {% endblock %}
     </body>
 </html>

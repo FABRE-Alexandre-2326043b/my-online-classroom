@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Résultats{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>🏆 Mes Résultats</h1>
+    <a href="{{ path('student_dashboard') }}" class="btn btn-outline-primary mb-4">Retour aux cours</a>
+
+    {% if results is empty %}
+        <div class="alert alert-info">Vous n'avez pas encore passé de QCM.</div>
+    {% else %}
+        <table class="table table-hover shadow-sm bg-white">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Quiz</th>
+                    <th>Cours</th>
+                    <th class="text-center">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                    <tr>
+                        <td>{{ result.completedAt|date('d/m/Y H:i') }}</td>
+                        <td>{{ result.quiz.title }}</td>
+                        <td>{{ result.quiz.course.title }}</td>
+                        <td class="text-center">
+                            {% if result.score >= 10 %}
+                                <span class="badge bg-success fs-6">{{ result.score }}/20</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-6">{{ result.score }}/20</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

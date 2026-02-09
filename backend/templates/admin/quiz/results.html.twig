@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultats : {{ quiz.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="mb-4">
+        <a href="{{ path('admin_quiz_index') }}" class="btn btn-outline-secondary btn-sm mb-2">← Retour aux QCM</a>
+        <h1 class="h3">📊 Résultats : {{ quiz.title }}</h1>
+        <p class="text-muted">Cours : {{ quiz.course.title }}</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Moyenne de la classe</h6>
+                    <h2 class="display-4">{{ average|number_format(1) }}<span class="fs-5">/20</span></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Participants</h6>
+                    <h2 class="display-4">{{ results|length }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            {% if results is empty %}
+                <p class="text-center text-muted py-3">Aucun élève n'a encore passé ce QCM.</p>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Étudiant</th>
+                                <th>Email</th>
+                                <th>Date de passage</th>
+                                <th class="text-center">Note</th>
+                                <th class="text-center">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                                <tr>
+                                    <td>
+                                        <span class="fw-bold">{{ result.student.email }}</span>
+                                    </td>
+                                    <td class="text-muted">{{ result.student.email }}</td>
+                                    <td>{{ result.completedAt|date('d/m/Y H:i') }}</td>
+                                    <td class="text-center">
+                                        <span class="fw-bold fs-5">{{ result.score }}</span>/20
+                                    </td>
+                                    <td class="text-center">
+                                        {% if result.score >= 10 %}
+                                            <span class="badge bg-success">Validé</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Échec</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
