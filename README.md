@@ -1,6 +1,6 @@
 # 🎓 My Online Classroom - Plateforme E-learning
 
-Une plateforme d'apprentissage complète réalisée avec **Symfony 8** et **API Platform**.
+Une plateforme d'apprentissage complète réalisée avec **Symfony 8** et **API Platform** par ALexandre FABRE.
 Elle permet aux professeurs de déposer des cours (PDF/Vidéo), de générer des QCM via IA, et aux élèves de suivre les cours et passer les examens.
 
 ## Prérequis
