@@ -18,11 +18,14 @@ Avant de commencer, assurez-vous d'avoir installé :
 
 ### 1. Récupérer le projet
 Clonez le dépôt ou extrayez l'archive dans votre dossier de travail.
+```bash
+git clone git@github.com:FABRE-Alexandre-2326043b/my-online-classroom.git
+cd my-online-classroom/backend
+```
 
 ### 2. Installer les dépendances PHP
 À la racine du projet, lancez :
 ```bash
-cd backend
 composer install
 ```
 
