@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Route('/admin/courses')]
 #[IsGranted('ROLE_TEACHER')]
@@ -49,49 +50,36 @@ class CourseController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             
+            $directory = $this->getParameter('courses_directory');
             $pdfFile = $form->get('pdfFile')->getData();
+            $pdfName = $this->uploadFile($pdfFile, $slugger, $directory);
+            
+            if ($pdfName) {
+                $course->setPdfFilename($pdfName);
 
-            if ($pdfFile) {
-                $originalFilename = pathinfo($pdfFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$pdfFile->guessExtension();
+                $projectDir = $this->getParameter('kernel.project_dir');
+                $finalPath = $projectDir . '/public/uploads/courses/' . $pdfName;
+                
+                $parser = new Parser();
+                $pdf = $parser->parseFile($finalPath); 
+                $rawText = $pdf->getText();
 
-                try {
-                    $pdfFile->move(
-                        $this->getParameter('kernel.project_dir') . '/public/uploads/courses',
-                        $newFilename
-                    );
-                    $course->setPdfFilename($newFilename);
+                $cleanText = mb_convert_encoding($rawText, 'UTF-8', 'auto');
+                $cleanText = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $cleanText);
+                $cleanText = iconv('UTF-8', 'UTF-8//IGNORE', $cleanText);
+                $cleanText = substr($cleanText, 0, 10000); 
 
-                    if ($form->get('generate_description')->getData()) {
-                        
-                        try {
-                        $parser = new Parser();
-                        $pdf = $parser->parseFile(
-                            $this->getParameter('kernel.project_dir') . '/public/uploads/courses/' . $newFilename
-                        );
-                        $text = $pdf->getText(); 
-
-                        $rawText = $parser->parseFile($pdfFile->getPathname())->getText();
-
-                        $cleanText = iconv('UTF-8', 'UTF-8//IGNORE', $rawText);
-                        
-                        if (false === $cleanText) {
-                            $cleanText = mb_convert_encoding($rawText, 'UTF-8', 'UTF-8');
-                        }
-                        
-                        $description = $aiService->generateCourseDescription($cleanText, $course->getTitle());
-                        $course->setDescription($description);
-                        } catch (\Exception $e) {
-                        $this->addFlash('warning', 'Le cours est créé, mais l\'IA n\'a pas pu générer le résumé : ' . $e->getMessage());
-                        }
-                    }
-
-                } catch (FileException $e) {
-                    $this->addFlash('danger', 'Erreur lors de l\'upload du fichier');
-                }
+                $summary = $aiService->generateCourseDescription($cleanText, $course->getTitle()); 
+                $course->setDescription($summary);
             }
 
+            $videoFile = $form->get('videoFile')->getData();
+            $videoName = $this->uploadFile($videoFile, $slugger, $directory);
+
+            if ($videoName) {
+                $course->setVideoFilename($videoName);
+            }
+            
             $course->setTeacher($this->getUser());
 
             $em->persist($course);
@@ -119,12 +107,43 @@ class CourseController extends AbstractController
         Course $course, 
         Request $request, 
         EntityManagerInterface $em,
-        CourseAIService $aiService
+        CourseAIService $aiService,
+        SluggerInterface $slugger
     ): Response {
         $form = $this->createForm(CourseType::class, $course);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $directory = $this->getParameter('courses_directory');
+            $pdfFile = $form->get('pdfFile')->getData();
+            $pdfName = $this->uploadFile($pdfFile, $slugger, $directory);
+            
+            if ($pdfName) {
+                $course->setPdfFilename($pdfName);
+
+                $projectDir = $this->getParameter('kernel.project_dir');
+                $finalPath = $projectDir . '/public/uploads/courses/' . $pdfName;
+                
+                $parser = new Parser();
+                $pdf = $parser->parseFile($finalPath); 
+                $rawText = $pdf->getText();
+
+                $cleanText = mb_convert_encoding($rawText, 'UTF-8', 'auto');
+                $cleanText = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $cleanText);
+                $cleanText = iconv('UTF-8', 'UTF-8//IGNORE', $cleanText);
+                $cleanText = substr($cleanText, 0, 10000); 
+
+                $summary = $aiService->generateCourseDescription($cleanText, $course->getTitle()); 
+                $course->setDescription($summary);
+            }
+
+            $videoFile = $form->get('videoFile')->getData();
+            $videoName = $this->uploadFile($videoFile, $slugger, $directory);
+
+            if ($videoName) {
+                $course->setVideoFilename($videoName);
+            }
+
             $em->flush();
 
             $this->addFlash('success', 'Cours mis à jour avec succès !');
@@ -135,5 +154,28 @@ class CourseController extends AbstractController
             'form' => $form,
             'course' => $course,
         ]);
+    }
+
+    /**
+     * Gère l'upload d'un fichier (PDF ou Vidéo)
+     * Retourne le nom du fichier ou null si aucun fichier n'est envoyé
+     */
+    private function uploadFile(?UploadedFile $file, SluggerInterface $slugger, string $targetDirectory): ?string
+    {
+        if (!$file) {
+            return null;
+        }
+
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $slugger->slug($originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+        try {
+            $file->move($targetDirectory, $newFilename);
+            return $newFilename; 
+        } catch (FileException $e) {
+            $this->addFlash('danger', 'Erreur upload vidéo : ' . $e->getMessage());
+        }
+        return null;
     }
 }

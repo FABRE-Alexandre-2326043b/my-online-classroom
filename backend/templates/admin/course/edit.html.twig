@@ -35,6 +35,25 @@
                             {{ form_errors(form.pdfFile) }}
                         </div>
 
+                        <div class="mb-3">
+                            {{ form_label(form.videoFile) }}
+                            
+                            {% if course.videoFilename %}
+                                <div class="alert alert-info d-flex align-items-center mt-2">
+                                    <span class="me-3">🎥 <strong>Vidéo actuelle :</strong></span>
+                                    <video controls style="height: 100px; border-radius: 5px;">
+                                        <source src="{{ asset('uploads/courses/' ~ course.videoFilename) }}" type="video/mp4">
+                                    </video>
+                                    <span class="ms-3 text-muted fst-italic small">
+                                        (Laissez le champ ci-dessous vide pour conserver cette vidéo)
+                                    </span>
+                                </div>
+                            {% endif %}
+
+                            {{ form_widget(form.videoFile) }}
+                            {{ form_errors(form.videoFile) }}
+                        </div>
+
                         <div class="mb-4">
                             {{ form_row(form.description) }}
                         </div>
