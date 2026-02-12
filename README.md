@@ -22,6 +22,7 @@ Clonez le dépôt ou extrayez l'archive dans votre dossier de travail.
 ### 2. Installer les dépendances PHP
 À la racine du projet, lancez :
 ```bash
+cd backend
 composer install
 ```
 
