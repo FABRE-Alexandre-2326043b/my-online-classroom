@@ -58,7 +58,8 @@ php bin/console doctrine:fixtures:load
 ```
 (Répondez yes à la confirmation).
 
-### 7. Création du dossier d'uploadAssurez-vous que le dossier de réception des fichiers existe :
+### 7. Création du dossier d'upload
+Assurez-vous que le dossier de réception des fichiers existe :
 ```bash
 mkdir -p public/uploads/courses
 ```
@@ -67,6 +68,55 @@ Démarrez le serveur local Symfony :
 ```bash 
 symfony serve
 ```
+
 Accédez au site via : http://127.0.0.1:8000🔑 
+
 Identifiants de test
-Les fixtures ont généré les comptes suivants (Mot de passe pour tous : password) :RôleEmailAccèsAdminadmin@test.comAccès complet au Back-office (/admin)Professeurprof1@test.comGestion de ses propres cours et QCMÉlèveeleve@test.comEspace étudiant, lecture cours, passage QCM (/student)🛠️ Fonctionnalités Principales👨‍🏫 Espace Professeur / AdminCRUD Cours : Création de cours avec upload de PDF et Vidéo.Génération QCM : Upload d'un PDF de cours -> L'IA (simulée ou réelle) génère des questions.Édition QCM : Modification des questions, ajout/suppression dynamique via JS.Suivi : Visualisation des résultats des élèves.👨‍🎓 Espace ÉlèveDashboard : Liste des cours disponibles.Lecture : Visualiseur PDF intégré et lecteur vidéo.Quiz : Passage de QCM interactifs avec calcul de note immédiat.Historique : Consultation des notes obtenues.🔌 API REST (Pour Mobile/Front externe)Documentation disponible (si activée) sur /api/docs.Authentification JWT (POST /api/login).Récupération des cours et quiz.Soumission des résultats.⚠️ Dépannage (Windows)Si vous rencontrez des erreurs type Extension not loaded :Vérifiez votre fichier php.ini.Assurez-vous que ces lignes sont décommentées (sans point-virgule au début) :extension=intlextension=mbstring (Pour le Markdown)extension=openssl (Pour JWT)extension=sodium (Pour JWT)extension=pdo_mysql
+
+### 🔑 Comptes de Démonstration (Fixtures)
+
+Les fixtures ont généré les comptes suivants (Mot de passe pour tous : **`password`**) :
+
+| Rôle | Email | Accès |
+| :--- | :--- | :--- |
+| **Admin** | `admin@test.com` | Accès complet au Back-office (`/admin`) |
+| **Professeur** | `prof1@test.com` | Gestion de ses propres cours et QCM |
+| **Élève** | `eleve@test.com` | Espace étudiant, lecture cours, passage QCM (`/student`) |
+
+---
+
+## 🛠️ Fonctionnalités Principales
+
+### 👨‍🏫 Espace Professeur / Admin
+* **CRUD Cours** : Création de cours avec upload de PDF et Vidéo.
+* **Génération QCM** : Upload d'un PDF de cours -> L'IA génère des questions automatiquement.
+* **Édition QCM** : Modification des questions, ajout/suppression dynamique via JS.
+* **Suivi** : Visualisation des résultats des élèves.
+
+### 👨‍🎓 Espace Élève
+* **Dashboard** : Liste des cours disponibles.
+* **Lecture** : Visualiseur PDF intégré et lecteur vidéo.
+* **Quiz** : Passage de QCM interactifs avec calcul de note immédiat.
+* **Historique** : Consultation des notes obtenues.
+
+### 🔌 API REST (Pour Mobile/Front externe)
+Documentation disponible (si activée) sur `/api/docs`.
+* **Authentification JWT** (`POST /api/login`).
+* Récupération des cours et quiz.
+* Soumission des résultats.
+
+---
+
+## ⚠️ Dépannage (Windows)
+
+Si vous rencontrez des erreurs type `Extension not loaded` :
+
+1.  Vérifiez votre fichier `php.ini`.
+2.  Assurez-vous que ces lignes sont décommentées (sans point-virgule au début) :
+
+```ini
+extension=intl
+extension=mbstring   ; Requis pour le convertisseur Markdown
+extension=openssl    ; Requis pour pour la génération des clés JWT
+extension=sodium     ; Requis pour l'encodage JWT
+extension=pdo_mysql
