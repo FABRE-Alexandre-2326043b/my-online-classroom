@@ -23,8 +23,17 @@
                             {{ form_label(form.pdfFile) }}
                             
                             {% if course.pdfFilename %}
-                                <div class="alert alert-info py-2 mb-2 d-flex align-items-center">
-                                    <span class="me-2">📄 Fichier actuel : <strong>{{ course.pdfFilename }}</strong></span>
+                                <div class="card mb-4" style="height: 850px;">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>📄 Support PDF</span>
+                                        <a href="{{ asset('uploads/courses/' ~ course.pdfFilename) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            Ouvrir dans un nouvel onglet
+                                        </a>
+                                    </div>
+                                    <div class="card-body p-0 h-100"  style="--bs-aspect-ratio: 140%;">
+                                        <iframe src="{{ asset('uploads/courses/' ~ course.pdfFilename) }}"  allowfullscreen style="border:none; min-height: 800px; min-width: 1150px">
+                                        </iframe>
+                                    </div>
                                 </div>
                             {% endif %}
                             
